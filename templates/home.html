@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content  %}
+      <div class="container-fluid">
+        <h3 class="mt-4" style="color:#00529F;"> UI framework for Process Mining using Python</h3>
+          <br>
+          <ul>
+          <li style="color:#00549f;font-size:20px;">Select the algorithm from the left menu...</li>
+          <br>
+          </ul>
+      </div>
+{% endblock %}
+{% block script %}
+<script>
+    $("#menu-toggle").click(function(e) {
+      e.preventDefault();
+      $("#wrapper").toggleClass("toggled");
+    });
+</script>
+{% endblock %}
