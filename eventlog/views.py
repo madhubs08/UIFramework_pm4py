@@ -18,6 +18,7 @@ def upload_page(request):
     log_attributes = {}
     event_logs_path = os.path.join(settings.MEDIA_ROOT,"event_logs")
     n_event_logs_path = os.path.join(settings.MEDIA_ROOT,"none_event_logs")
+    print("in required place")
 
     if request.method == 'POST':
         if request.is_ajax():  # currently is not being used (get commented in html file)
@@ -31,14 +32,18 @@ def upload_page(request):
             log_attributes['no_traces'] = no_traces
             log_attributes['no_events'] = no_events
             print(log_attributes)
-            json_respone = {'log_attributes': log_attributes, 'eventlog_list':eventlogs}
-            return HttpResponse(json.dumps(json_respone),content_type='application/json')
+            json_response = {'log_attributes': log_attributes, 'eventlog_list':eventlogs}
+            return HttpResponse(json.dumps(json_response),content_type='application/json')
             # return render(request, 'upload.html', {'log_attributes': log_attributes, 'eventlog_list':eventlogs})
         else:
+            print("in upload button")
             if "uploadButton" in request.POST:
+                print("inputload1")
                 if "event_log" not in request.FILES:
+                    print("inputload2")
                     return HttpResponseRedirect(request.path_info)
 
+                print("inputload3")
                 log = request.FILES["event_log"]
                 fs = FileSystemStorage(event_logs_path)
                 filename = fs.save(log.name, log)
@@ -150,5 +155,4 @@ def upload_page(request):
 
         return render(request, 'upload.html', {'eventlog_list':eventlogs, 'n_eventlog_list': n_eventlogs})
 
-        #return render(request, 'upload.html')
 

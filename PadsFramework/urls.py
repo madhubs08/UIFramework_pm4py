@@ -23,7 +23,6 @@ from PadsFramework import views
 urlpatterns = [
     path('',views.initial, name= 'home'),
     path('event/', include('eventlog.urls')),
-    path('event/event/', include('eventlog.urls')),
-    path('admin/', admin.site.urls)
+    path('/filter/', include('filtering.urls')),
+    path('/admin/', admin.site.urls)
 ]
-urlpatterns = urlpatterns + static(settings.MEDIA_URL,document_root = settings.MEDIA_ROOT)

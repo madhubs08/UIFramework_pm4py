@@ -18,7 +18,7 @@
            <br>
         <div class="row">
           <div class=" col-sm-6 col-md-7 col-lg-8">
-                <form  name="load" action="event" method = "POST" enctype="multipart/form-data">
+                <form  name="load" action="" method = "POST" enctype="multipart/form-data">
                     {% csrf_token %}
 
                     <p>Event log: <input type = "file" value="fileupload" name = "event_log" /></p>
@@ -31,7 +31,7 @@
         <br>
         <div class="row">
           <div class=" col-sm-6 col-md-7 col-lg-8">
-                <form  name="choice" action="event" method = "POST">
+                <form  name="choice" action="" method = "POST">
                     {% csrf_token %}
 
                     <select name="log_list" class="custom-select" size="10">

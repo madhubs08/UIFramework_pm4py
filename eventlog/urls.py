@@ -21,5 +21,4 @@ urlpatterns = [
 
     path('',views.upload_page, name='event_log'),
 
-
 ]

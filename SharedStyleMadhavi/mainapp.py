@@ -23,7 +23,7 @@ def add_header(response):
 def get_first_page():
    return render_template('bootstrapTemplate.html')
 
-@mainapp.route('/InsideEventLog.html', methods=['POST','GET'])
+@mainapp.route('/upload.html', methods=['POST','GET'])
 def get_pre_event_log():
 
     event_log_cols =[]
@@ -34,12 +34,12 @@ def get_pre_event_log():
     if request.method == 'POST':
         el_info = "Post request received"
 
-    return download_file, render_template('InsideEventLog.html', el_cols=event_log_cols,el_info =el_info)
+    return download_file, render_template('upload.html', el_cols=event_log_cols,el_info =el_info)
 
-@mainapp.route('/EventLog.html')
+@mainapp.route('/upload.html')
 def get_event_log():
 
-    return render_template('EventLog.html')
+    return render_template('upload.html')
 
 
 if __name__ == '__main__':
