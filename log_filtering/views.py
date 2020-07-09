@@ -7,100 +7,97 @@ from os import path
 from datetime import datetime
 from django.http import HttpResponseRedirect, HttpResponse
 from wsgiref.util import FileWrapper
+from pm4py.algo.discovery.alpha import algorithm as alpha_miner
+from pm4py.objects.log.importer.xes import importer
+from pm4py.algo.discovery.dfg import algorithm as dfg_discovery
+from pm4py.algo.discovery.dfg import factory as dfg_factory
+import json
+import re
+
 
 
 
 # Create your views here.
 
 def filter(request):
+    print(request.method)
     if request.method == 'POST':
-
-
+        if "uploadButton" in request.POST:
+            print("in request")
         event_logs_path = os.path.join(settings.MEDIA_ROOT, "event_logs")
         temp_path = os.path.join(settings.MEDIA_ROOT, "temp")
 
         if settings.EVENT_LOG_NAME == ':notset:':
             return HttpResponseRedirect(request.path_info)
 
-        values = setValues(request)
         event_log = os.path.join(event_logs_path, settings.EVENT_LOG_NAME)
-        MinMax = [True, True]
-        if values['LowerUpper'] == "LowerUpper":
-            MinMax = [True, True]
-        elif values['LowerUpper'] == "Lower":
-            MinMax = [True, False]
-        elif values['LowerUpper'] == "Upper":
-            MinMax = [False, True]
-
-        resource_aware = False
-        hashedActivities = False
-
-        if 'resourceAware' in values:
-            resource_aware = True
-        if 'hashedAct' in values:
-            hashedActivities =True
-
-        show_final_result = False
 
         event_log = os.path.join(event_logs_path, settings.EVENT_LOG_NAME)
         exportPrivacyAwareLog = True
+        log = importer.apply(event_log)
+        dfg = dfg_discovery.apply(log)
+        print("dfg=" + dfg)
+        dfg = dfg_factory.apply(log)
+        print(dfg)
+        this_data = dfg_to_g6(dfg)
 
-        now =datetime.now()
-        date_time = now.strftime(" %m-%d-%y %H-%M-%S ")
-        new_file_name = values['RoleMining_Tech'] + date_time + settings.EVENT_LOG_NAME
-        privacy_aware_log_path = os.path.join(temp_path, "role_mining", new_file_name)
 
-        settings.ROLE_FILE = privacy_aware_log_path
-        settings.ROLE_APPLIED = True
+        network = {}
 
-        if os.path.isfile(settings.ROLE_FILE):
-            values['load'] = False
-        else:
-            values['load'] = True
-
-        #outputs = get_output_list("role_mining")
-
-        return render(request,'role_main.html', {'log_name': settings.EVENT_LOG_NAME, 'values':values})
+        return render(request,'filter.html', {'log_name': settings.EVENT_LOG_NAME, 'data':this_data})
 
     else:
-        values = {}
-        values['fixedValue'] = 2
-        values['LowerUpper'] = 'LowerUpper'
-        values['fixedValueFreq'] = 1
-        values['resourceAware'] = 'resourceAware'
-        values['hashedAct'] = 'hashedAct'
+        if "groupButton" in request.GET:
+            print("in request")
+            groupname = request.GET["new_name"]
+            activities = request.GET["groupButton"]
 
-        if not (os.path.isfile(settings.ROLE_FILE)) and settings.ROLE_APPLIED:
-            values['load'] = True
+            print(groupname)
+            print(activities)
         else:
-            settings.ROLE_APPLIED = False
-            values['load'] = False
+            event_logs_path = os.path.join(settings.MEDIA_ROOT, "event_logs")
+            temp_path = os.path.join(settings.MEDIA_ROOT, "temp")
 
-        #outputs = get_output_list("role_mining")
-        outputs = {}
+            if settings.EVENT_LOG_NAME == ':notset:':
+                return HttpResponseRedirect(request.path_info)
 
-        return render(request, 'role_main.html',
-                      {'log_name': settings.EVENT_LOG_NAME, 'values': values, 'outputs': outputs})
+            event_log = os.path.join(event_logs_path, settings.EVENT_LOG_NAME)
 
-        #return render(request, 'upload.html')
+            event_log = os.path.join(event_logs_path, settings.EVENT_LOG_NAME)
+            exportPrivacyAwareLog = True
+            log = importer.apply(event_log)
+            dfg = dfg_discovery.apply(log)
+            dfg = dfg_factory.apply(log)
+            print(dfg)
+            this_data,temp_file = dfg_to_g6(dfg)
 
-def setValues(request):
-    values = {}
-    values['RoleMining_Tech'] = request.POST['RoleMining_Tech']
-    values['fixedValue'] = request.POST['fixedValue']
-    values['LowerUpper'] = request.POST['LowerUpper']
-    values['fixedValueFreq'] = request.POST['fixedValueFreq']
-    if 'resourceAware' in request.POST:
-        values['resourceAware'] = request.POST['resourceAware']
-    if 'hashedAct' in request.POST:
-        values['hashedAct'] = request.POST['hashedAct']
+            re.escape(temp_file)
+            network = {}
 
-    return values
+            return render(request,'filter.html', {'log_name': settings.EVENT_LOG_NAME, 'json_file': temp_file, 'data':json.dumps(this_data)})
 
+def dfg_to_g6(dfg):
+    unique_nodes = []
 
-def get_output_list(directoty):
+    for i in dfg:
+        unique_nodes.extend(i)
+    unique_nodes = list(set(unique_nodes))
+
+    unique_nodes_dict = {}
+
+    for index, node in enumerate(unique_nodes):
+        unique_nodes_dict[node] = "node_" + str(index)
+
+    nodes = [{'id': unique_nodes_dict[i], 'label': i} for i in unique_nodes_dict]
+    edges = [{'from': unique_nodes_dict[i[0]], 'to': unique_nodes_dict[i[1]], "data": {"freq": dfg[i]}} for i in
+             dfg]
+    data = {
+        "nodes": nodes,
+        "edges": edges,
+    }
     temp_path = os.path.join(settings.MEDIA_ROOT, "temp")
-    output_path = os.path.join(temp_path, directoty)
-    outputs = [f for f in os.listdir(output_path) if
-                           os.path.isfile(os.path.join(output_path, f))]
-    return outputs
+    temp_file = os.path.join(temp_path, 'data.json')
+    with open(temp_file, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+
+    return data, temp_file
