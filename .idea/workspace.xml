@@ -28,6 +28,12 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
+    <option name="PUSH_TAGS">
+      <GitPushTagMode>
+        <option name="argument" value="--tags" />
+        <option name="title" value="All" />
+      </GitPushTagMode>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="1eB4yT5lTYCkvTi7U2AVjgyLII0" />
@@ -42,7 +48,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/templates" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="org.jetbrains.plugins.github.ui.GithubSettingsConfigurable" />
   </component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
@@ -207,14 +213,16 @@
       <screen x="0" y="0" width="1707" height="920" />
     </state>
     <state width="1685" height="242" key="GridCell.Tab.0.right/0.0.1707.920@0.0.1707.920" timestamp="1594719280499" />
-    <state x="355" y="105" key="SettingsEditor" timestamp="1594035773712">
-      <screen x="0" y="0" width="1707" height="920" />
+    <state x="399" y="119" key="SettingsEditor" timestamp="1595496194371">
+      <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="355" y="105" key="SettingsEditor/0.0.1707.920@0.0.1707.920" timestamp="1594035773712" />
-    <state x="446" y="193" key="Vcs.Push.Dialog.v2" timestamp="1594720257366">
-      <screen x="0" y="0" width="1707" height="920" />
+    <state x="399" y="119" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1595496194371" />
+    <state x="502" y="218" key="Vcs.Push.Dialog.v2" timestamp="1595496096418">
+      <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="446" y="193" key="Vcs.Push.Dialog.v2/0.0.1707.920@0.0.1707.920" timestamp="1594720257366" />
+    <state x="502" y="218" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1595496096418" />
     <state x="93" y="93" width="1521" height="735" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1594712373023">
       <screen x="0" y="0" width="1707" height="920" />
     </state>
