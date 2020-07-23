@@ -20,11 +20,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eed136c0-84eb-4345-a123-4cb2c46ab4af" name="Default" comment="EventLog Modification">
-      <change afterPath="$PROJECT_DIR$/log_filtering/transformation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/log_filtering/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/log_filtering/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/media/event_logs/running_example.xes" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -150,7 +146,14 @@
       <option name="project" value="LOCAL" />
       <updated>1594300106295</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="EventLog Modification">
+      <created>1594720024837</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1594720024837</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -208,10 +211,10 @@
       <screen x="0" y="0" width="1707" height="920" />
     </state>
     <state x="355" y="105" key="SettingsEditor/0.0.1707.920@0.0.1707.920" timestamp="1594035773712" />
-    <state x="446" y="193" key="Vcs.Push.Dialog.v2" timestamp="1594300112345">
+    <state x="446" y="193" key="Vcs.Push.Dialog.v2" timestamp="1594720257366">
       <screen x="0" y="0" width="1707" height="920" />
     </state>
-    <state x="446" y="193" key="Vcs.Push.Dialog.v2/0.0.1707.920@0.0.1707.920" timestamp="1594300112345" />
+    <state x="446" y="193" key="Vcs.Push.Dialog.v2/0.0.1707.920@0.0.1707.920" timestamp="1594720257366" />
     <state x="93" y="93" width="1521" height="735" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1594712373023">
       <screen x="0" y="0" width="1707" height="920" />
     </state>
