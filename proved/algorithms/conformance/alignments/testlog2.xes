@@ -1,0 +1,26 @@
+<log>
+  <trace>
+    <string key="concept:name" value="0"/>
+    <event>
+      <string key="concept:name" value="A"/>
+      <date key="time:timestamp" value="1980-01-05T00:00:00"/>
+    </event>
+    <event>
+      <string key="concept:name" value="B"/>
+      <date key="time:timestamp" value="1980-01-07T00:00:00"/>
+      <date key="u:time:timestamp_min" value="1980-01-04T00:00:00"/>
+      <date key="u:time:timestamp_max" value="1980-01-05T12:00:00"/>
+    </event>
+    <event>
+      <string key="concept:name" value="E"/>
+      <date key="time:timestamp" value="1980-01-07T12:00:00"/>
+      <int key="u:missing" value="1"/>
+    </event>
+    <event>
+      <string key="concept:name" value="C"/>
+      <date key="time:timestamp" value="1980-01-08T00:00:00"/>
+      <date key="u:time:timestamp_min" value="1980-01-06T00:00:00"/>
+      <date key="u:time:timestamp_max" value="1980-01-10T00:00:00"/>
+    </event>
+  </trace>
+</log>

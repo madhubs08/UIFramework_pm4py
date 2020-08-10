@@ -26,6 +26,7 @@ urlpatterns = [
     path('',views.home, name= 'home'),
     #url(r'^rolemining/', include(role_mining.urls))
     path('upload/', include('upload_eventlog.urls')),
-    path('filter', include('log_filtering.urls')),
+    path('filter/', include('log_filtering.urls')),
+    path('uncertainty/', include('uncertainty.urls')),
 ]
 urlpatterns = urlpatterns + static(settings.MEDIA_URL,document_root = settings.MEDIA_ROOT)
