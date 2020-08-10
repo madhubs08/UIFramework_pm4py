@@ -23,6 +23,7 @@ def uncertainty_home(request):
     event_log = os.path.join(event_logs_path, settings.EVENT_LOG_NAME)
     log = xes_importer_factory.apply(event_log)
     u_log = uncertain_log.UncertainLog(log)
+    variants_table = tuple((id_var, size) for id_var, (size, _) in u_log.variants.items())
     log_len = 0
     for trace in log:
         log_len += len(trace)
@@ -30,7 +31,7 @@ def uncertainty_home(request):
     activities_map = dict()
     start_activities_map = dict()
     end_activities_map = dict()
-    for (_, _, nodes_lists) in u_log.variants:
+    for _, (_, nodes_lists) in u_log.variants.items():
         for ((_, activities), _) in nodes_lists:
             for activity in activities:
                 activities_map[activity] = [0, 0]
@@ -60,7 +61,7 @@ def uncertainty_home(request):
     activities_table = [(freq_min, freq_max, round(freq_min/log_len*100, 2), round(freq_max/log_len*100, 2), activity) for freq_min, freq_max, activity in activities_table_abs]
     start_activities_table = [(freq_min, freq_max, round(freq_min/log_len*100, 2), round(freq_max/log_len*100, 2), activity) for freq_min, freq_max, activity in start_activities_table_abs]
     end_activities_table = [(freq_min, freq_max, round(freq_min/log_len*100, 2), round(freq_max/log_len*100, 2), activity) for freq_min, freq_max, activity in end_activities_table_abs]
-    return render(request, 'uncertainty.html', {'variants': u_log.variants, 'log': log, 'log_len': log_len, 'avg_trace_len': avg_trace_len, 'activities_table': activities_table, 'start_activities_table': start_activities_table, 'end_activities_table': end_activities_table})
+    return render(request, 'uncertainty.html', {'variants': variants_table, 'log': log, 'log_len': log_len, 'avg_trace_len': avg_trace_len, 'activities_table': activities_table, 'start_activities_table': start_activities_table, 'end_activities_table': end_activities_table})
 
 
 def upload_page(request):

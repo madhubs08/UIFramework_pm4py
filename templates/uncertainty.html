@@ -27,8 +27,8 @@ tr:nth-child(even) {
         <div style="width: 200px;">
            <br>
             <ul>
-                {% for id, size, _ in variants %}
-                <li class="list-group-item list-group-item-action bg-light">Variant {{id}} <br> {{size}} trace(s)</li>
+                {% for id_var, size in variants %}
+                <li class="list-group-item list-group-item-action bg-light"><a href="/uncertainty.html/?var={{id_var}}"> Variant {{id_var}}</a> <br> {{size}} trace(s)</li>
                 {% endfor %}
             </ul>
         </div>
@@ -37,7 +37,7 @@ tr:nth-child(even) {
             <ul>
                 <li><strong>Num. events: </strong>{{log_len}}</li>
                 <li><strong>Num. traces: </strong>{{log|length}}</li>
-                <li><strong>Average trace length: </strong>{{avg_trace_len}}</li>
+                <li><strong>Average trace length: </strong>{{avg_trace_len}} events</li>
                 <li><strong>Num. variants: </strong>{{variants|length}}</li>
             </ul>
             <h4 style="color:#00529F;">Activities</h4>
