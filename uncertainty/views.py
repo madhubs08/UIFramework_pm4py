@@ -14,6 +14,7 @@ import json
 
 from proved.artifacts.uncertain_log import uncertain_log
 from proved import xes_keys
+from proved.artifacts.behavior_net import behavior_net
 
 # Create your views here.
 
@@ -72,7 +73,10 @@ def uncertainty_variant(request, variant):
     log = xes_importer_factory.apply(event_log)
     u_log = uncertain_log.UncertainLog(log)
     variants_table = request.session['uncertainty_summary']['variants']
-    return render(request, 'uncertainty_variant.html', {'variant': variant, 'variants': variants_table})
+    bg, traces_list = u_log.behavior_graphs_map[u_log.variants[variant][1]]
+    bn = behavior_net.BehaviorNet(bg)
+    traces_table = ((i, len(trace)) for i, trace in enumerate(traces_list))
+    return render(request, 'uncertainty_variant.html', {'variant': variant, 'variants': variants_table, 'traces': traces_table})
 
 # def uncertainty_variant(request):
 #     event_logs_path = os.path.join(settings.MEDIA_ROOT, "event_logs")

@@ -29,10 +29,18 @@ tr:nth-child(even) {
             <ul>
                 {% for id_var, size in variants %}
                     {% if id_var == variant %}
-                        <li class="list-group-item list-group-item-action bg-light"><a href="/uncertainty/variant.html/?var={{id_var}}"><strong>&lt;&lt;Variant {{id_var}}&gt;&gt;</strong></a> <br> {{size}} trace(s)</li>
+                        <li class="list-group-item list-group-item-action bg-light"><a href="/uncertainty"><strong>&lt;&lt;Variant {{id_var}}&gt;&gt;</strong></a> <br> {{size}} trace(s)</li>
                     {% else %}
-                        <li class="list-group-item list-group-item-action bg-light"><a href="/uncertainty/variant.html/?var={{id_var}}">Variant {{id_var}}</a> <br> {{size}} trace(s)</li>
+                        <li class="list-group-item list-group-item-action bg-light"><a href="/uncertainty/variant/{{id_var}}">Variant {{id_var}}</a> <br> {{size}} trace(s)</li>
                     {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+        <div style="width: 200px;">
+           <br>
+            <ul>
+                {% for id_trace, trace_len in traces %}
+                    <li class="list-group-item list-group-item-action bg-light"><a href="/uncertainty/variant/{{id_var}}/trace/{{id_trace}}">Trace {{id_trace}}</a> <br> {{trace_len}} event(s)</li>
                 {% endfor %}
             </ul>
         </div>
