@@ -84,7 +84,41 @@ def uncertainty_variant(request, variant):
     return render(request, 'uncertainty_variant.html', {'variant': variant, 'variants': variants_table, 'traces': traces_table, 'log_name': log_name, 'image_bn': image_bn})
 
 
-def uncertainty_trace(request, trace):
-    pass
+def uncertainty_trace(request, variant, trace):
+    event_logs_path = os.path.join(settings.MEDIA_ROOT, "event_logs")
+    event_log = os.path.join(event_logs_path, settings.EVENT_LOG_NAME)
+    log_name = settings.EVENT_LOG_NAME.split('.')[0]
+    log = xes_importer_factory.apply(event_log)
+    u_log = uncertain_log.UncertainLog(log)
+    variants_table = request.session['uncertainty_summary']['variants']
+    bg, traces_list = u_log.behavior_graphs_map[u_log.variants[variant][1]]
+    traces_table = ((i, len(trace)) for i, trace in enumerate(traces_list))
+    # Path(os.path.join(settings.STATIC_URL, 'uncertainty', 'variant', 'img_bn', log_name)).mkdir(parents=True, exist_ok=True)
+    if not glob.glob(os.path.join(settings.STATIC_URL, 'uncertainty', 'variant', 'img_bn', log_name, 'bn' + str(variant) + '.png')):
+        bn = behavior_net.BehaviorNet(bg)
+        gviz = pn_vis_factory.apply(bn, bn.initial_marking, bn.final_marking, parameters={'format': 'png'})
+        # pn_vis_factory.save(gviz, os.path.join('static', 'bn' + str(variant) + '.png'))
+        pn_vis_factory.save(gviz, os.path.join('static', 'uncertainty', 'variant', 'img_bn', log_name, 'bn' + str(variant) + '.png'))
+    image_bn = os.path.join('uncertainty', 'variant', 'img_bn', log_name, 'bn' + str(variant) + '.png')
+    trace_table = []
+    for i, event in enumerate(traces_list[trace]):
+        table_row = [str(i)]
+        if xes_keys.DEFAULT_U_NAME_KEY in event:
+            table_row.append(', '.join([str(act) for act in event[xes_keys.DEFAULT_U_NAME_KEY]['children']]))
+        else:
+            table_row.append(str(event[xes_constants.DEFAULT_NAME_KEY]))
+        if xes_keys.DEFAULT_U_TIMESTAMP_MIN_KEY in event:
+            table_row.append(str(event[xes_keys.DEFAULT_U_TIMESTAMP_MIN_KEY]))
+            table_row.append(str(event[xes_keys.DEFAULT_U_TIMESTAMP_MAX_KEY]))
+        else:
+            table_row.append(str(event[xes_constants.DEFAULT_TIMESTAMP_KEY]))
+            table_row.append(str(event[xes_constants.DEFAULT_TIMESTAMP_KEY]))
+        if xes_keys.DEFAULT_U_MISSING_KEY in event:
+            table_row.append('Yes')
+        else:
+            table_row.append('No')
+        trace_table.append(table_row)
+    return render(request, 'uncertainty_trace.html', {'variant': variant, 'trace': trace, 'trace_table': trace_table,  'variants': variants_table, 'traces': traces_table, 'log_name': log_name, 'image_bn': image_bn})
+
 
 

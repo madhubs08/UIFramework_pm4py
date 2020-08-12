@@ -47,7 +47,11 @@ img {
            <br>
             <ul>
                 {% for id_trace, trace_len in traces %}
-                    <li class="list-group-item list-group-item-action bg-light"><a href="/uncertainty/variant/{{variant}}/trace/{{id_trace}}">Trace {{id_trace}}</a> <br> {{trace_len}} event(s)</li>
+                    {% if id_trace == trace %}
+                        <li class="list-group-item list-group-item-action bg-light"><a href="/uncertainty/variant/{{variant}}/"><strong>&lt;&lt;Trace {{id_trace}}&gt;&gt;</strong></a> <br> {{trace_len}} event(s)</li>
+                    {% else %}
+                        <li class="list-group-item list-group-item-action bg-light"><a href="/uncertainty/variant/{{variant}}/trace/{{id_trace}}">Trace {{id_trace}}</a> <br> {{trace_len}} event(s)</li>
+                    {% endif %}
                 {% endfor %}
             </ul>
         </div>
@@ -62,12 +66,33 @@ img {
             </ul>
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade show active" id="behavior-graph" role="tabpanel" aria-labelledby="behavior-graph-tab">
-
+                    <br>
+                    <br>
                 </div>
                 <div class="tab-pane fade" id="behavior-net" role="tabpanel" aria-labelledby="behavior-net-tab">
                     <img src="{% static image_bn %}">
                 </div>
             </div>
+            <br>
+            <br>
+            <table>
+              <tr>
+                <th>Event</th>
+                <th>Activities</th>
+                <th>Timestamp (min)</th>
+                <th>Timestamp (max)</th>
+                <th>Indeterminate</th>
+              </tr>
+                {% for event, acts, timestamp_min, timestamp_max, indet in trace_table %}
+              <tr>
+                <td>{{event}}</td>
+                <td>{{acts}}</td>
+                <td>{{timestamp_min}}</td>
+                <td>{{timestamp_max}}</td>
+                <td>{{indet}}</td>
+              </tr>
+                {% endfor %}
+            </table>
         </div>
     </div>
 </div>
