@@ -22,7 +22,7 @@ def uncertainty_home(request):
     event_log = os.path.join(event_logs_path, settings.EVENT_LOG_NAME)
     log = xes_importer_factory.apply(event_log)
     u_log = uncertain_log.UncertainLog(log)
-    variants_table = tuple((id_var, size) for id_var, (size, _) in u_log.variants.items())
+    variants_table = tuple((id_var, size, len(nodes_tuple)//2) for id_var, (size, nodes_tuple) in u_log.variants.items())
     log_len = 0
     for trace in log:
         log_len += len(trace)

@@ -34,11 +34,11 @@ img {
         <div style="width: 200px;">
            <br>
             <ul>
-                {% for id_var, size in variants %}
+                {% for id_var, size, n_events in variants %}
                     {% if id_var == variant %}
-                        <li class="list-group-item list-group-item-action bg-light"><a href="/uncertainty"><strong>&lt;&lt;Variant {{id_var}}&gt;&gt;</strong></a> <br> {{size}} trace(s)</li>
+                        <li class="list-group-item list-group-item-action bg-light"><a href="/uncertainty"><strong>&lt;&lt;Variant {{id_var}}&gt;&gt;</strong></a> <br> {{size}} trace(s) of {{n_events}} event(s) each</li>
                     {% else %}
-                        <li class="list-group-item list-group-item-action bg-light"><a href="/uncertainty/variant/{{id_var}}">Variant {{id_var}}</a> <br> {{size}} trace(s)</li>
+                        <li class="list-group-item list-group-item-action bg-light"><a href="/uncertainty/variant/{{id_var}}">Variant {{id_var}}</a> <br> {{size}} trace(s) of {{n_events}} event(s) each</li>
                     {% endif %}
                 {% endfor %}
             </ul>
@@ -46,8 +46,8 @@ img {
         <div style="width: 200px;">
            <br>
             <ul>
-                {% for id_trace, trace_len in traces %}
-                    <li class="list-group-item list-group-item-action bg-light"><a href="/uncertainty/variant/{{variant}}/trace/{{id_trace}}">Trace {{id_trace}}</a> <br> {{trace_len}} event(s)</li>
+                {% for id_trace, _ in traces %}
+                    <li class="list-group-item list-group-item-action bg-light"><a href="/uncertainty/variant/{{variant}}/trace/{{id_trace}}">Trace {{id_trace}}</a></li>
                 {% endfor %}
             </ul>
         </div>
