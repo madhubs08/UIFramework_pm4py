@@ -6,6 +6,7 @@ from django.conf import settings
 import os
 import glob
 from pathlib import Path
+import matplotlib.pyplot as plt
 
 from io import BytesIO
 import base64
@@ -20,12 +21,48 @@ from proved.artifacts.behavior_net import behavior_net
 def uncertainty_home(request):
     event_logs_path = os.path.join(settings.MEDIA_ROOT, "event_logs")
     event_log = os.path.join(event_logs_path, settings.EVENT_LOG_NAME)
+    log_name = settings.EVENT_LOG_NAME.split('.')[0]
     log = xes_importer_factory.apply(event_log)
     u_log = uncertain_log.UncertainLog(log)
     variants_table = tuple((id_var, size, len(nodes_tuple)//2) for id_var, (size, nodes_tuple) in u_log.variants.items())
     log_len = 0
+    n_certain_events = 0
+    n_uncertain_events = 0
+    n_certain_traces = 0
+    n_uncertain_traces = 0
     for trace in log:
         log_len += len(trace)
+        is_trace_uncertain = False
+        for event in trace:
+            if xes_keys.DEFAULT_U_NAME_KEY in event or xes_keys.DEFAULT_U_TIMESTAMP_MIN_KEY in event or xes_keys.DEFAULT_U_MISSING_KEY in event:
+                n_uncertain_events += 1
+                is_trace_uncertain = True
+            else:
+                n_certain_events += 1
+        if is_trace_uncertain:
+            n_uncertain_traces += 1
+        else:
+            n_certain_traces += 1
+    print(n_certain_events)
+    print(n_uncertain_events)
+    print(n_certain_traces)
+    print(n_uncertain_traces)
+    labels = ['Certain', 'Uncertain']
+    colors = ['lightblue', 'lightsteelblue']
+    explode = [0, .1]
+    patches, texts = plt.pie([n_certain_events, n_uncertain_events], colors=colors, shadow=True, startangle=90, explode=explode)
+    plt.legend(patches, labels, loc="best")
+    plt.axis('equal')
+    plt.tight_layout()
+    event_ratio_graph = os.path.join('uncertainty', log_name, 'event_ratio.png')
+    plt.savefig(os.path.join('static', event_ratio_graph))
+    plt.clf()
+    patches, texts = plt.pie([n_certain_traces, n_uncertain_traces], colors=colors, shadow=True, startangle=90, explode=explode)
+    plt.legend(patches, labels, loc="best")
+    plt.axis('equal')
+    plt.tight_layout()
+    trace_ratio_graph = os.path.join('uncertainty', log_name, 'trace_ratio.png')
+    plt.savefig(os.path.join('static', trace_ratio_graph))
     avg_trace_len = log_len / len(log)
     activities_map = dict()
     start_activities_map = dict()
@@ -61,7 +98,7 @@ def uncertainty_home(request):
     start_activities_table = [(freq_min, freq_max, round(freq_min/log_len*100, 2), round(freq_max/log_len*100, 2), activity) for freq_min, freq_max, activity in start_activities_table_abs]
     end_activities_table = [(freq_min, freq_max, round(freq_min/log_len*100, 2), round(freq_max/log_len*100, 2), activity) for freq_min, freq_max, activity in end_activities_table_abs]
     request.session['uncertainty_summary'] = {'variants': variants_table, 'log_len': log_len, 'avg_trace_len': avg_trace_len, 'activities_table': activities_table, 'start_activities_table': start_activities_table, 'end_activities_table': end_activities_table}
-    return render(request, 'uncertainty.html', {'variants': variants_table, 'log': log, 'log_len': log_len, 'avg_trace_len': avg_trace_len, 'activities_table': activities_table, 'start_activities_table': start_activities_table, 'end_activities_table': end_activities_table})
+    return render(request, 'uncertainty.html', {'variants': variants_table, 'log': log, 'log_len': log_len, 'avg_trace_len': avg_trace_len, 'activities_table': activities_table, 'start_activities_table': start_activities_table, 'end_activities_table': end_activities_table, 'event_ratio_graph': event_ratio_graph, 'trace_ratio_graph': trace_ratio_graph})
     # return render(request, 'uncertainty.html', request.session['uncertainty_summary'])
 
 
@@ -75,12 +112,12 @@ def uncertainty_variant(request, variant):
     bg, traces_list = u_log.behavior_graphs_map[u_log.variants[variant][1]]
     traces_table = ((i, len(trace)) for i, trace in enumerate(traces_list))
     # Path(os.path.join(settings.STATIC_URL, 'uncertainty', 'variant', 'img_bn', log_name)).mkdir(parents=True, exist_ok=True)
-    if not glob.glob(os.path.join(settings.STATIC_URL, 'uncertainty', 'variant', 'img_bn', log_name, 'bn' + str(variant) + '.png')):
+    if not glob.glob(os.path.join(settings.STATIC_URL, 'uncertainty', log_name, 'variants', 'img_bn', 'bn' + str(variant) + '.png')):
         bn = behavior_net.BehaviorNet(bg)
         gviz = pn_vis_factory.apply(bn, bn.initial_marking, bn.final_marking, parameters={'format': 'png'})
         # pn_vis_factory.save(gviz, os.path.join('static', 'bn' + str(variant) + '.png'))
-        pn_vis_factory.save(gviz, os.path.join('static', 'uncertainty', 'variant', 'img_bn', log_name, 'bn' + str(variant) + '.png'))
-    image_bn = os.path.join('uncertainty', 'variant', 'img_bn', log_name, 'bn' + str(variant) + '.png')
+        pn_vis_factory.save(gviz, os.path.join('static', 'uncertainty', log_name, 'variants', 'img_bn', 'bn' + str(variant) + '.png'))
+    image_bn = os.path.join('uncertainty', log_name, 'variants', 'img_bn', 'bn' + str(variant) + '.png')
     return render(request, 'uncertainty_variant.html', {'variant': variant, 'variants': variants_table, 'traces': traces_table, 'log_name': log_name, 'image_bn': image_bn})
 
 
@@ -94,12 +131,12 @@ def uncertainty_trace(request, variant, trace):
     bg, traces_list = u_log.behavior_graphs_map[u_log.variants[variant][1]]
     traces_table = ((i, len(trace)) for i, trace in enumerate(traces_list))
     # Path(os.path.join(settings.STATIC_URL, 'uncertainty', 'variant', 'img_bn', log_name)).mkdir(parents=True, exist_ok=True)
-    if not glob.glob(os.path.join(settings.STATIC_URL, 'uncertainty', 'variant', 'img_bn', log_name, 'bn' + str(variant) + '.png')):
+    if not glob.glob(os.path.join(settings.STATIC_URL, 'uncertainty', log_name, 'variants', 'img_bn', 'bn' + str(variant) + '.png')):
         bn = behavior_net.BehaviorNet(bg)
         gviz = pn_vis_factory.apply(bn, bn.initial_marking, bn.final_marking, parameters={'format': 'png'})
         # pn_vis_factory.save(gviz, os.path.join('static', 'bn' + str(variant) + '.png'))
-        pn_vis_factory.save(gviz, os.path.join('static', 'uncertainty', 'variant', 'img_bn', log_name, 'bn' + str(variant) + '.png'))
-    image_bn = os.path.join('uncertainty', 'variant', 'img_bn', log_name, 'bn' + str(variant) + '.png')
+        pn_vis_factory.save(gviz, os.path.join('static', 'uncertainty', log_name, 'variants', 'img_bn', 'bn' + str(variant) + '.png'))
+    image_bn = os.path.join('uncertainty', log_name, 'variants', 'img_bn', 'bn' + str(variant) + '.png')
     trace_table = []
     for i, event in enumerate(traces_list[trace]):
         table_row = [str(i)]

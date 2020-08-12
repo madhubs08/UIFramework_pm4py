@@ -1,9 +1,14 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content  %}
 
 
 <style>
+img {
+    max-width: 100%;
+    max-height: 100%;
+}
 table {
   font-family: arial, sans-serif;
   border-collapse: collapse;
@@ -33,13 +38,25 @@ tr:nth-child(even) {
             </ul>
         </div>
         <div style="flex-grow: 1; margin: 30px;">
-            <h4 style="color:#00529F;">Uncertain Log Statistics</h4>
-            <ul>
-                <li><strong>Num. events: </strong>{{log_len}}</li>
-                <li><strong>Num. traces: </strong>{{log|length}}</li>
-                <li><strong>Average trace length: </strong>{{avg_trace_len}} events</li>
-                <li><strong>Num. variants: </strong>{{variants|length}}</li>
-            </ul>
+            <div style="height: 300px">
+                <div style="width: 33%; float: left;">
+                    <h4 style="color:#00529F;">Uncertain Log Statistics</h4>
+                    <ul>
+                        <li><strong>Num. events: </strong>{{log_len}}</li>
+                        <li><strong>Num. traces: </strong>{{log|length}}</li>
+                        <li><strong>Average trace length: </strong>{{avg_trace_len}} events</li>
+                        <li><strong>Num. variants: </strong>{{variants|length}}</li>
+                    </ul>
+                </div>
+                <div style="width: 33%; float: left;">
+                    <h4 style="color:#00529F;">Uncertain Events</h4>
+                    <img id="event-ratio-img" src="{% static event_ratio_graph %}">
+                </div>
+                <div style="width: 33%; float: left;">
+                    <h4 style="color:#00529F;">Uncertain Traces</h4>
+                    <img id="trace-ratio-img" src="{% static trace_ratio_graph %}">
+                </div>
+            </div>
             <h4 style="color:#00529F;">Activities</h4>
             <table>
               <tr>
