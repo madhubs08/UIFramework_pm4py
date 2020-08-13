@@ -5,8 +5,10 @@ from pm4py.visualization.petrinet import factory as pn_vis_factory
 from django.conf import settings
 import os
 import glob
+import shutil
 from pathlib import Path
 import matplotlib.pyplot as plt
+from graphviz import Digraph
 
 from io import BytesIO
 import base64
@@ -14,6 +16,7 @@ import base64
 from proved.artifacts.uncertain_log import uncertain_log
 from proved import xes_keys
 from proved.artifacts.behavior_net import behavior_net
+from proved.artifacts.behavior_graph import behavior_graph
 
 # Create your views here.
 
@@ -112,13 +115,26 @@ def uncertainty_variant(request, variant):
     bg, traces_list = u_log.behavior_graphs_map[u_log.variants[variant][1]]
     traces_table = ((i, len(trace)) for i, trace in enumerate(traces_list))
     # Path(os.path.join(settings.STATIC_URL, 'uncertainty', 'variant', 'img_bn', log_name)).mkdir(parents=True, exist_ok=True)
+    if not glob.glob(os.path.join(settings.STATIC_URL, 'uncertainty', log_name, 'variants', 'img_bg', 'bg' + str(variant) + '.png')):
+        g = Digraph('bg', format='png', filename='bg' + str(variant) + '.png')
+        g.attr(rankdir='LR')
+        for bg_node in bg.nodes:
+            if None in bg_node[1]:
+                g.attr('node', style='dashed')
+            else:
+                g.attr('node', style='solid')
+            g.node(str(bg_node), label=', '.join([act for act in bg_node[1] if act is not None]))
+        for bg_node1, bg_node2 in bg.edges:
+            g.edge(str(bg_node1), str(bg_node2))
+        bg_render = g.render(cleanup=True)
+        image_bg = os.path.join('uncertainty', log_name, 'variants', 'img_bg', 'bg' + str(variant) + '.png')
+        shutil.copyfile(bg_render, os.path.join('static', image_bg))
     if not glob.glob(os.path.join(settings.STATIC_URL, 'uncertainty', log_name, 'variants', 'img_bn', 'bn' + str(variant) + '.png')):
         bn = behavior_net.BehaviorNet(bg)
         gviz = pn_vis_factory.apply(bn, bn.initial_marking, bn.final_marking, parameters={'format': 'png'})
-        # pn_vis_factory.save(gviz, os.path.join('static', 'bn' + str(variant) + '.png'))
         pn_vis_factory.save(gviz, os.path.join('static', 'uncertainty', log_name, 'variants', 'img_bn', 'bn' + str(variant) + '.png'))
     image_bn = os.path.join('uncertainty', log_name, 'variants', 'img_bn', 'bn' + str(variant) + '.png')
-    return render(request, 'uncertainty_variant.html', {'variant': variant, 'variants': variants_table, 'traces': traces_table, 'log_name': log_name, 'image_bn': image_bn})
+    return render(request, 'uncertainty_variant.html', {'variant': variant, 'variants': variants_table, 'traces': traces_table, 'log_name': log_name, 'image_bn': image_bn, 'image_bg': image_bg})
 
 
 def uncertainty_trace(request, variant, trace):
@@ -131,10 +147,23 @@ def uncertainty_trace(request, variant, trace):
     bg, traces_list = u_log.behavior_graphs_map[u_log.variants[variant][1]]
     traces_table = ((i, len(trace)) for i, trace in enumerate(traces_list))
     # Path(os.path.join(settings.STATIC_URL, 'uncertainty', 'variant', 'img_bn', log_name)).mkdir(parents=True, exist_ok=True)
+    if not glob.glob(os.path.join(settings.STATIC_URL, 'uncertainty', log_name, 'variants', 'img_bg', 'bg' + str(variant) + '.png')):
+        g = Digraph('bg', format='png', filename='bg' + str(variant) + '.png')
+        g.attr(rankdir='LR')
+        for bg_node in bg.nodes:
+            if None in bg_node[1]:
+                g.attr('node', style='dashed')
+            else:
+                g.attr('node', style='solid')
+            g.node(str(bg_node), label=', '.join([act for act in bg_node[1] if act is not None]))
+        for bg_node1, bg_node2 in bg.edges:
+            g.edge(str(bg_node1), str(bg_node2))
+        bg_render = g.render(cleanup=True)
+        image_bg = os.path.join('uncertainty', log_name, 'variants', 'img_bg', 'bg' + str(variant) + '.png')
+        shutil.copyfile(bg_render, os.path.join('static', image_bg))
     if not glob.glob(os.path.join(settings.STATIC_URL, 'uncertainty', log_name, 'variants', 'img_bn', 'bn' + str(variant) + '.png')):
         bn = behavior_net.BehaviorNet(bg)
         gviz = pn_vis_factory.apply(bn, bn.initial_marking, bn.final_marking, parameters={'format': 'png'})
-        # pn_vis_factory.save(gviz, os.path.join('static', 'bn' + str(variant) + '.png'))
         pn_vis_factory.save(gviz, os.path.join('static', 'uncertainty', log_name, 'variants', 'img_bn', 'bn' + str(variant) + '.png'))
     image_bn = os.path.join('uncertainty', log_name, 'variants', 'img_bn', 'bn' + str(variant) + '.png')
     trace_table = []
@@ -155,7 +184,7 @@ def uncertainty_trace(request, variant, trace):
         else:
             table_row.append('No')
         trace_table.append(table_row)
-    return render(request, 'uncertainty_trace.html', {'variant': variant, 'trace': trace, 'trace_table': trace_table,  'variants': variants_table, 'traces': traces_table, 'log_name': log_name, 'image_bn': image_bn})
+    return render(request, 'uncertainty_trace.html', {'variant': variant, 'trace': trace, 'trace_table': trace_table,  'variants': variants_table, 'traces': traces_table, 'log_name': log_name, 'image_bn': image_bn, 'image_bg': image_bg})
 
 
 
