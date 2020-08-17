@@ -73,9 +73,10 @@ def uncertainty_home(request):
     for _, (_, nodes_lists) in u_log.variants.items():
         for ((_, activities), _) in nodes_lists:
             for activity in activities:
-                activities_map[activity] = [0, 0]
-                start_activities_map[activity] = [0, 0]
-                end_activities_map[activity] = [0, 0]
+                if activity is not None:
+                    activities_map[activity] = [0, 0]
+                    start_activities_map[activity] = [0, 0]
+                    end_activities_map[activity] = [0, 0]
     for trace in log:
         for i, event in enumerate(trace):
             if xes_keys.DEFAULT_U_NAME_KEY in event:
@@ -102,7 +103,6 @@ def uncertainty_home(request):
     end_activities_table = [(freq_min, freq_max, round(freq_min/log_len*100, 2), round(freq_max/log_len*100, 2), activity) for freq_min, freq_max, activity in end_activities_table_abs]
     request.session['uncertainty_summary'] = {'variants': variants_table, 'log_len': log_len, 'avg_trace_len': avg_trace_len, 'activities_table': activities_table, 'start_activities_table': start_activities_table, 'end_activities_table': end_activities_table}
     return render(request, 'uncertainty.html', {'variants': variants_table, 'log': log, 'log_len': log_len, 'avg_trace_len': avg_trace_len, 'activities_table': activities_table, 'start_activities_table': start_activities_table, 'end_activities_table': end_activities_table, 'event_ratio_graph': event_ratio_graph, 'trace_ratio_graph': trace_ratio_graph})
-    # return render(request, 'uncertainty.html', request.session['uncertainty_summary'])
 
 
 def uncertainty_variant(request, variant):
