@@ -53,14 +53,14 @@ def uncertainty_home(request):
     labels = ['Certain', 'Uncertain']
     colors = ['lightblue', 'lightsteelblue']
     explode = [0, .1]
-    patches, texts = plt.pie([n_certain_events, n_uncertain_events], colors=colors, shadow=True, startangle=90, explode=explode)
+    patches, texts = plt.pie([n_certain_events, n_uncertain_events], colors=colors, shadow=True, startangle=90, explode=explode, labels=[str(n_certain_events) + '\n(' + str(round(n_certain_events / (n_certain_events + n_uncertain_events) * 100, 2)) + '%)', str(n_uncertain_events) + '\n(' + str(round(n_uncertain_events / (n_certain_events + n_uncertain_events) * 100, 2)) + '%)'])
     plt.legend(patches, labels, loc="best")
     plt.axis('equal')
     plt.tight_layout()
     event_ratio_graph = os.path.join('uncertainty', log_name, 'event_ratio.png')
     plt.savefig(os.path.join('static', event_ratio_graph))
     plt.clf()
-    patches, texts = plt.pie([n_certain_traces, n_uncertain_traces], colors=colors, shadow=True, startangle=90, explode=explode)
+    patches, texts = plt.pie([n_certain_traces, n_uncertain_traces], colors=colors, shadow=True, startangle=90, explode=explode, labels=[str(n_certain_traces) + '\n(' + str(round(n_certain_traces / (n_certain_traces + n_uncertain_traces) * 100, 2)) + '%)', str(n_uncertain_traces) + '\n(' + str(round(n_uncertain_traces / (n_certain_traces + n_uncertain_traces) * 100, 2)) + '%)'])
     plt.legend(patches, labels, loc="best")
     plt.axis('equal')
     plt.tight_layout()
