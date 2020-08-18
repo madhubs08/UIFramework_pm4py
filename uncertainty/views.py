@@ -47,10 +47,6 @@ def uncertainty_home(request):
             n_uncertain_traces += 1
         else:
             n_certain_traces += 1
-    print(n_certain_events)
-    print(n_uncertain_events)
-    print(n_certain_traces)
-    print(n_uncertain_traces)
     labels = ['Certain', 'Uncertain']
     colors = ['lightblue', 'lightsteelblue']
     explode = [0, .1]
@@ -201,14 +197,12 @@ def uncertainty_trace(request, variant, trace):
             labels.append(str(event[xes_constants.DEFAULT_NAME_KEY]))
     gnt.set_ylim(0, len(dates) * 10 + 20)
     gnt.set_yticks([i * 10 + 15 for i in range(len(dates))])
-    # gnt.set_yticklabels([str(i) for i in range(len(dates))])
     gnt.set_yticklabels(labels)
     gnt.grid(True)
     for i, (base, increment) in enumerate(dates):
         gnt.broken_barh([(base, increment)], ((i + 1) * 10, 9), facecolors=('tab:blue'))
-    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%H:%M:%S'))
-    plt.gca().xaxis.set_major_locator(mdates.DayLocator())
-    plt.gcf().autofmt_xdate()
+    gnt.xaxis.set_major_formatter(mdates.DateFormatter('%d-%m-%Y %H:%M:%S'))
+    fig.autofmt_xdate()
     plt.savefig(os.path.join('static', 'uncertainty', log_name, 'traces', 'img_gantt', 'gantt' + str(variant) + '_' + str(trace) + '.png'), bbox_inches='tight')
     plt.clf()
     image_gantt = os.path.join('uncertainty', log_name, 'traces', 'img_gantt', 'gantt' + str(variant) + '_' + str(trace) + '.png')
