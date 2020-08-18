@@ -173,11 +173,11 @@ def uncertainty_trace(request, variant, trace):
         else:
             table_row.append(str(event[xes_constants.DEFAULT_NAME_KEY]))
         if xes_keys.DEFAULT_U_TIMESTAMP_MIN_KEY in event:
-            table_row.append(str(event[xes_keys.DEFAULT_U_TIMESTAMP_MIN_KEY]))
-            table_row.append(str(event[xes_keys.DEFAULT_U_TIMESTAMP_MAX_KEY]))
+            table_row.append(str(event[xes_keys.DEFAULT_U_TIMESTAMP_MIN_KEY].strftime('%d-%m-%Y %H:%M:%S')))
+            table_row.append(str(event[xes_keys.DEFAULT_U_TIMESTAMP_MAX_KEY].strftime('%d-%m-%Y %H:%M:%S')))
         else:
-            table_row.append(str(event[xes_constants.DEFAULT_TIMESTAMP_KEY]))
-            table_row.append(str(event[xes_constants.DEFAULT_TIMESTAMP_KEY]))
+            table_row.append(str(event[xes_constants.DEFAULT_TIMESTAMP_KEY].strftime('%d-%m-%Y %H:%M:%S')))
+            table_row.append(str(event[xes_constants.DEFAULT_TIMESTAMP_KEY].strftime('%d-%m-%Y %H:%M:%S')))
         if xes_keys.DEFAULT_U_MISSING_KEY in event:
             table_row.append('Yes')
         else:

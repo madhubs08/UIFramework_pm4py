@@ -110,8 +110,12 @@ img {
               <tr>
                 <td>{{event}}</td>
                 <td>{{acts}}</td>
-                <td>{{timestamp_min}}</td>
-                <td>{{timestamp_max}}</td>
+                  {% if timestamp_min == timestamp_max %}
+                  <td colspan="2"><center>{{timestamp_min}}</center></td>
+                  {% else %}
+                  <td>{{timestamp_min}}</td>
+                  <td>{{timestamp_max}}</td>
+                  {% endif %}
                 <td>{{indet}}</td>
               </tr>
                 {% endfor %}
