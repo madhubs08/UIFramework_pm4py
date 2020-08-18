@@ -8,8 +8,9 @@ import glob
 import shutil
 from pathlib import Path
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 from graphviz import Digraph
-
+from datetime import datetime, timedelta
 from io import BytesIO
 import base64
 
@@ -129,6 +130,7 @@ def uncertainty_variant(request, variant):
         bg_render = g.render(cleanup=True)
         image_bg = os.path.join('uncertainty', log_name, 'variants', 'img_bg', 'bg' + str(variant) + '.png')
         shutil.copyfile(bg_render, os.path.join('static', image_bg))
+    image_bg = os.path.join('uncertainty', log_name, 'variants', 'img_bg', 'bg' + str(variant) + '.png')
     if not glob.glob(os.path.join(settings.STATIC_URL, 'uncertainty', log_name, 'variants', 'img_bn', 'bn' + str(variant) + '.png')):
         bn = behavior_net.BehaviorNet(bg)
         gviz = pn_vis_factory.apply(bn, bn.initial_marking, bn.final_marking, parameters={'format': 'png'})
@@ -161,6 +163,7 @@ def uncertainty_trace(request, variant, trace):
         bg_render = g.render(cleanup=True)
         image_bg = os.path.join('uncertainty', log_name, 'variants', 'img_bg', 'bg' + str(variant) + '.png')
         shutil.copyfile(bg_render, os.path.join('static', image_bg))
+    image_bg = os.path.join('uncertainty', log_name, 'variants', 'img_bg', 'bg' + str(variant) + '.png')
     if not glob.glob(os.path.join(settings.STATIC_URL, 'uncertainty', log_name, 'variants', 'img_bn', 'bn' + str(variant) + '.png')):
         bn = behavior_net.BehaviorNet(bg)
         gviz = pn_vis_factory.apply(bn, bn.initial_marking, bn.final_marking, parameters={'format': 'png'})
@@ -184,7 +187,32 @@ def uncertainty_trace(request, variant, trace):
         else:
             table_row.append('No')
         trace_table.append(table_row)
-    return render(request, 'uncertainty_trace.html', {'variant': variant, 'trace': trace, 'trace_table': trace_table,  'variants': variants_table, 'traces': traces_table, 'log_name': log_name, 'image_bn': image_bn, 'image_bg': image_bg})
+    fig, gnt = plt.subplots()
+    dates = []
+    labels = []
+    for event in traces_list[trace]:
+        if xes_keys.DEFAULT_U_TIMESTAMP_MIN_KEY in event:
+            dates.append((mdates.date2num(event[xes_keys.DEFAULT_U_TIMESTAMP_MIN_KEY]), mdates.date2num(event[xes_keys.DEFAULT_U_TIMESTAMP_MAX_KEY]) - mdates.date2num(event[xes_keys.DEFAULT_U_TIMESTAMP_MIN_KEY])))
+        else:
+            dates.append((mdates.date2num(event[xes_constants.DEFAULT_TIMESTAMP_KEY]), mdates.date2num(event[xes_constants.DEFAULT_TIMESTAMP_KEY] + timedelta(seconds=30)) - mdates.date2num(event[xes_constants.DEFAULT_TIMESTAMP_KEY])))
+        if xes_keys.DEFAULT_U_NAME_KEY in event:
+            labels.append(', '.join([str(act) for act in event[xes_keys.DEFAULT_U_NAME_KEY]['children']]))
+        else:
+            labels.append(str(event[xes_constants.DEFAULT_NAME_KEY]))
+    gnt.set_ylim(0, len(dates) * 10 + 20)
+    gnt.set_yticks([i * 10 + 15 for i in range(len(dates))])
+    # gnt.set_yticklabels([str(i) for i in range(len(dates))])
+    gnt.set_yticklabels(labels)
+    gnt.grid(True)
+    for i, (base, increment) in enumerate(dates):
+        gnt.broken_barh([(base, increment)], ((i + 1) * 10, 9), facecolors=('tab:blue'))
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%H:%M:%S'))
+    plt.gca().xaxis.set_major_locator(mdates.DayLocator())
+    plt.gcf().autofmt_xdate()
+    plt.savefig(os.path.join('static', 'uncertainty', log_name, 'traces', 'img_gantt', 'gantt' + str(variant) + '_' + str(trace) + '.png'), bbox_inches='tight')
+    plt.clf()
+    image_gantt = os.path.join('uncertainty', log_name, 'traces', 'img_gantt', 'gantt' + str(variant) + '_' + str(trace) + '.png')
+    return render(request, 'uncertainty_trace.html', {'variant': variant, 'trace': trace, 'trace_table': trace_table,  'variants': variants_table, 'traces': traces_table, 'log_name': log_name, 'image_bn': image_bn, 'image_bg': image_bg, 'image_gantt': image_gantt})
 
 
 
