@@ -63,6 +63,7 @@ def uncertainty_home(request):
     plt.tight_layout()
     trace_ratio_graph = os.path.join('uncertainty', log_name, 'trace_ratio.png')
     plt.savefig(os.path.join('static', trace_ratio_graph))
+    plt.clf()
     avg_trace_len = log_len / len(log)
     activities_map = dict()
     start_activities_map = dict()
@@ -78,11 +79,17 @@ def uncertainty_home(request):
         for i, event in enumerate(trace):
             if xes_keys.DEFAULT_U_NAME_KEY in event:
                 for activity in event[xes_keys.DEFAULT_U_NAME_KEY]['children']:
-                    activities_map[activity][0] += 1
+                    activities_map[activity][1] += 1
                     if i == 0:
-                        start_activities_map[activity][0] += 1
+                        start_activities_map[activity][1] += 1
                     if i == len(trace) - 1:
-                        end_activities_map[activity][0] += 1
+                        end_activities_map[activity][1] += 1
+            elif xes_keys.DEFAULT_U_MISSING_KEY in event:
+                activities_map[event[xes_constants.DEFAULT_NAME_KEY]][1] += 1
+                if i == 0:
+                    start_activities_map[event[xes_constants.DEFAULT_NAME_KEY]][1] += 1
+                if i == len(trace) - 1:
+                    end_activities_map[event[xes_constants.DEFAULT_NAME_KEY]][1] += 1
             else:
                 activities_map[event[xes_constants.DEFAULT_NAME_KEY]][0] += 1
                 activities_map[event[xes_constants.DEFAULT_NAME_KEY]][1] += 1
